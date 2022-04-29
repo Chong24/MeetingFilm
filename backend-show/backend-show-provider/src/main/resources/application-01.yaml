@@ -1,0 +1,16 @@
+server:
+  port: 7102
+
+#访问的url
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+#客户端名，起到标识的作用
+spring:
+  application:
+    name: hello-service-provider
+
+logging:
+  config: classpath:logback.xml
