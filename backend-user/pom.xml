@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!--将父工程改成我们项目的父工程的依赖-->
+	<parent>
+		<groupId>com.mooc.meetingfilm</groupId>
+		<artifactId>backend-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<!--代表指向父工程依赖的xml配置文件-->
+		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
+	</parent>
+
+	<groupId>com.mooc.meetingfilm</groupId>
+	<artifactId>backend-user</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>backend-user</name>
+	<description>meetingfilm用户模块</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+		<!--common模块引入了utils模块，所以引入了common模块，utils模块也会引入进来-->
+		<dependency>
+			<groupId>com.mooc.meetingfilm</groupId>
+			<artifactId>backend-common</artifactId>
+		</dependency>
+    </dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<!--不修改版本，先clean再打包package会报错-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
