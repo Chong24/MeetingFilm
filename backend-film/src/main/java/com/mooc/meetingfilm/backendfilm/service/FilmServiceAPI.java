@@ -1,6 +1,7 @@
 package com.mooc.meetingfilm.backendfilm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.mooc.meetingfilm.apis.film.vo.DescribeFilmRespVO;
 import com.mooc.meetingfilm.backendfilm.controller.vo.DescribeActorsRespVO;
 import com.mooc.meetingfilm.backendfilm.controller.vo.DescribeFilmsRespVO;
 import com.mooc.meetingfilm.backendfilm.controller.vo.FilmSavedReqVO;
@@ -20,7 +21,7 @@ public interface FilmServiceAPI {
     IPage<DescribeFilmsRespVO> describeFilms(int nowPage, int pageSize) throws CommonServiceException;
 
     // 根据主键获取电影信息
-    DescribeFilmsRespVO describeFilmById(String filmId) throws CommonServiceException;
+    DescribeFilmRespVO describeFilmById(String filmId) throws CommonServiceException;
 
     // 保存电影信息
     void saveFilm(FilmSavedReqVO filmSavedReqVO) throws CommonServiceException;

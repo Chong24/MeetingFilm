@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mooc.meetingfilm.apis.film.vo.DescribeFilmRespVO;
+import com.mooc.meetingfilm.backendhall.apis.FilmFeignApi;
 import com.mooc.meetingfilm.backendhall.controller.vo.HallSavedReqVO;
 import com.mooc.meetingfilm.backendhall.controller.vo.HallsReqVO;
 import com.mooc.meetingfilm.backendhall.controller.vo.HallsRespVO;
@@ -11,6 +13,7 @@ import com.mooc.meetingfilm.backendhall.dao.entity.MoocFieldT;
 import com.mooc.meetingfilm.backendhall.dao.entity.MoocHallFilmInfoT;
 import com.mooc.meetingfilm.backendhall.dao.mapper.MoocFieldTMapper;
 import com.mooc.meetingfilm.backendhall.dao.mapper.MoocHallFilmInfoTMapper;
+import com.mooc.meetingfilm.common.vo.BaseResponseVO;
 import com.mooc.meetingfilm.exception.CommonServiceException;
 import com.mooc.meetingfilm.util.ToolUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +43,9 @@ public class HallServiceImpl implements HallServiceAPI {
 
     @Autowired
     private LoadBalancerClient eurekaClient;
+
+    @Resource
+    private FilmFeignApi filmFeignApi;
 
     @Override
     public IPage<HallsRespVO> describeHalls(HallsReqVO hallsReqVO) throws CommonServiceException {
@@ -79,36 +85,60 @@ public class HallServiceImpl implements HallServiceAPI {
         hallFilmInfoTMapper.insert(hallFilmInfo);
     }
 
-    private MoocHallFilmInfoT describeFilmInfo(String filmId) throws CommonServiceException{
-//        //得到Eureka Provider在Eureka Service中注册的信息
-//        ServiceInstance choose = eurekaClient.choose("film-service");
-//        //组织调用参数
-//        String hostname = choose.getHost();
-//        int port = choose.getPort();
+    //没引用feign的做法
+//    private MoocHallFilmInfoT describeFilmInfo(String filmId) throws CommonServiceException{
+////        //得到Eureka Provider在Eureka Service中注册的信息
+////        ServiceInstance choose = eurekaClient.choose("film-service");
+////        //组织调用参数
+////        String hostname = choose.getHost();
+////        int port = choose.getPort();
+////
+////        String uri = "/films/" + filmId;
+////
+////        String url = "http://" + hostname + ":" + port + uri;
 //
+//        //ribbion + Eureka
 //        String uri = "/films/" + filmId;
+//        String url = "http://film-service" + uri;
 //
-//        String url = "http://" + hostname + ":" + port + uri;
+//        //通过Java的远程调用工具restTemplate调用影片服务
+//        JSONObject forObject = restTemplate.getForObject(url, JSONObject.class);
+//
+//        //解析返回值，返回的包含code, message, data，其实就是我们封装的baseResponseVO
+//        JSONObject dataJson = forObject.getJSONObject("data");
+//
+//        //组织参数，将data中的数据封装到MoocHallFilmInfoT中返回，他们的参数都一致
+//        MoocHallFilmInfoT hallFilmInfo = new MoocHallFilmInfoT();
+//
+//        hallFilmInfo.setFilmId(dataJson.getIntValue("filmId"));
+//        hallFilmInfo.setFilmName(dataJson.getString("filmName"));
+//        hallFilmInfo.setFilmLength(dataJson.getString("filmLength"));
+//        hallFilmInfo.setFilmCats(dataJson.getString("filmCats"));
+//        hallFilmInfo.setActors(dataJson.getString("actors"));
+//        hallFilmInfo.setImgAddress(dataJson.getString("imgAddress"));
+//
+//        return hallFilmInfo;
+//    }
 
-        //ribbion + Eureka
-        String uri = "/films/" + filmId;
-        String url = "http://film-service" + uri;
+    //引用feign的做法
+    // 播放厅对应的影片数据， 影片冗余数据， 缓存里有一份
+    private MoocHallFilmInfoT describeFilmInfo(String filmId) throws CommonServiceException{
+        // 解析返回值
+        BaseResponseVO<DescribeFilmRespVO> baseResponseVO = filmFeignApi.describeFilmById(filmId);
+        DescribeFilmRespVO filmResult = baseResponseVO.getData();
+        if(filmResult == null || ToolUtils.strIsNull(filmResult.getFilmId())){
+            throw new CommonServiceException(404, "抱歉，未能找到对应的电影信息，filmId : "+filmId);
+        }
 
-        //通过Java的远程调用工具restTemplate调用影片服务
-        JSONObject forObject = restTemplate.getForObject(url, JSONObject.class);
-
-        //解析返回值，返回的包含code, message, data，其实就是我们封装的baseResponseVO
-        JSONObject dataJson = forObject.getJSONObject("data");
-
-        //组织参数，将data中的数据封装到MoocHallFilmInfoT中返回，他们的参数都一致
+        // 组织参数
         MoocHallFilmInfoT hallFilmInfo = new MoocHallFilmInfoT();
 
-        hallFilmInfo.setFilmId(dataJson.getIntValue("filmId"));
-        hallFilmInfo.setFilmName(dataJson.getString("filmName"));
-        hallFilmInfo.setFilmLength(dataJson.getString("filmLength"));
-        hallFilmInfo.setFilmCats(dataJson.getString("filmCats"));
-        hallFilmInfo.setActors(dataJson.getString("actors"));
-        hallFilmInfo.setImgAddress(dataJson.getString("imgAddress"));
+        hallFilmInfo.setFilmId(ToolUtils.str2Int(filmResult.getFilmId()));
+        hallFilmInfo.setFilmName(filmResult.getFilmName());
+        hallFilmInfo.setFilmLength(filmResult.getFilmLength());
+        hallFilmInfo.setFilmCats(filmResult.getFilmCats());
+        hallFilmInfo.setActors(filmResult.getActors());
+        hallFilmInfo.setImgAddress(filmResult.getImgAddress());
 
         return hallFilmInfo;
     }

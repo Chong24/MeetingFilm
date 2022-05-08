@@ -4,7 +4,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://jiangzh:jiangzh123@localhost:8761/eureka/
 
 spring:
   application:
@@ -13,3 +13,17 @@ spring:
 
 logging:
   config: classpath:logback.xml
+
+#feign开启整合hystrix
+feign:
+  hystrix:
+    enabled: true
+  httpclient:
+    enabled: true
+  compression:
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 2048
+    response:
+      enabled: true

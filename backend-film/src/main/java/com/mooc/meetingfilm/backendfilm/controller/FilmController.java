@@ -2,6 +2,7 @@ package com.mooc.meetingfilm.backendfilm.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.collect.Maps;
+import com.mooc.meetingfilm.apis.film.vo.DescribeFilmRespVO;
 import com.mooc.meetingfilm.backendfilm.controller.vo.DescribeActorsRespVO;
 import com.mooc.meetingfilm.backendfilm.controller.vo.DescribeFilmsRespVO;
 import com.mooc.meetingfilm.backendfilm.controller.vo.FilmSavedReqVO;
@@ -72,7 +73,7 @@ public class FilmController {
     @RequestMapping(value = "/{filmId}",method = RequestMethod.GET)
     public BaseResponseVO describeFilmById(@PathVariable("filmId")String filmId) throws CommonServiceException {
 
-        DescribeFilmsRespVO describeFilmRespVO = filmServiceAPI.describeFilmById(filmId);
+        DescribeFilmRespVO describeFilmRespVO = filmServiceAPI.describeFilmById(filmId);
 
         if(describeFilmRespVO == null){
             return BaseResponseVO.success();

@@ -22,7 +22,7 @@ public class ProviderController {
     @GetMapping("/provider/sayhello")
     public String providerSayHello(String message){
 
-        log.error("provder sayhello port:{}, message:{}",port,message);
+        log.error("provider sayhello port:{}, message:{}",port,message);
 
         return "Provider sayhello port:"+port+" , message:"+message;
     }

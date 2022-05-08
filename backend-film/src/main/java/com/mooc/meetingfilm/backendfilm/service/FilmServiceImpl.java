@@ -2,6 +2,7 @@ package com.mooc.meetingfilm.backendfilm.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mooc.meetingfilm.apis.film.vo.DescribeFilmRespVO;
 import com.mooc.meetingfilm.backendfilm.controller.vo.DescribeActorsRespVO;
 import com.mooc.meetingfilm.backendfilm.controller.vo.DescribeFilmsRespVO;
 import com.mooc.meetingfilm.backendfilm.controller.vo.FilmSavedReqVO;
@@ -71,7 +72,7 @@ public class FilmServiceImpl implements FilmServiceAPI{
      * @throws CommonServiceException
      */
     @Override
-    public DescribeFilmsRespVO describeFilmById(String filmId) throws CommonServiceException {
+    public DescribeFilmRespVO describeFilmById(String filmId) throws CommonServiceException {
         return filmTMapper.descrbeFilmById(filmId);
     }
 
